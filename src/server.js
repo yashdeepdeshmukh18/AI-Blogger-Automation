@@ -10,6 +10,7 @@ const {
 const { getBlogs } = require("./services/bloggerService");
 const Article = require("./models/Article");
 const { publishToBlogger } = require("./services/bloggerService");
+const startPublishJob = require("./jobs/publishJob");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/api/articles", articleRoutes);
 
 connectDB();
+startPublishJob();
 
 
 app.get("/", (req, res) => {
