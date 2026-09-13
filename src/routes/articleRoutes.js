@@ -16,6 +16,7 @@ router.post("/generate", async (req, res) => {
 
     const article = await Article.create({
       title: articleData.title,
+      normalizedTitle: articleData.title.trim().toLowerCase(),
       body: articleData.body,
       tags: articleData.tags,
       status: "PENDING",
@@ -28,6 +29,13 @@ router.post("/generate", async (req, res) => {
     res.status(201).json(article);
   } catch (error) {
     console.error("Article generation failed:", error.message);
+
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: "Duplicate article title generated. Please try again.",
+      });
+    }
+    
     res.status(500).json({
       message: "Failed to generate article",
     });

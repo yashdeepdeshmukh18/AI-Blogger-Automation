@@ -23,6 +23,12 @@ const articleSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    normalizedTitle: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
   },
   { timestamps: true }
 );
