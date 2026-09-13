@@ -3,11 +3,13 @@ require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/db");
 const articleRoutes = require("./routes/articleRoutes");
-const { getBlogs } = require("./services/bloggerService");
 const {
   getAuthUrl,
   saveToken,
 } = require("./services/bloggerAuth");
+const { getBlogs } = require("./services/bloggerService");
+const Article = require("./models/Article");
+const { publishToBlogger } = require("./services/bloggerService");
 
 const app = express();
 
@@ -58,6 +60,45 @@ app.get("/api/blogger/blogs", async (req, res) => {
     console.error("Failed to fetch Blogger blogs:", error.message);
     res.status(500).json({
       message: "Failed to fetch Blogger blogs",
+      error: error.message,
+    });
+  }
+});
+
+app.post("/api/articles/:id/publish", async (req, res) => {
+  try {
+    const article = await Article.findById(req.params.id);
+
+    if (!article) {
+      return res.status(404).json({
+        message: "Article not found",
+      });
+    }
+
+    if (article.status === "PUBLISHED") {
+      return res.status(400).json({
+        message: "Article already published",
+      });
+    }
+
+    const bloggerPost = await publishToBlogger({
+      title: article.title,
+      body: article.body,
+    });
+
+    article.status = "PUBLISHED";
+    await article.save();
+
+    res.json({
+      message: "Article published successfully",
+      bloggerPostUrl: bloggerPost.url,
+      article,
+    });
+  } catch (error) {
+    console.error("Publishing failed:", error.message);
+
+    res.status(500).json({
+      message: "Failed to publish article",
       error: error.message,
     });
   }

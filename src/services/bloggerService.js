@@ -2,9 +2,7 @@ const { google } = require("googleapis");
 const { oauth2Client, loadToken } = require("./bloggerAuth");
 
 const getBloggerClient = () => {
-  const tokenLoaded = loadToken();
-
-  if (!tokenLoaded) {
+  if (!loadToken()) {
     throw new Error("Google OAuth required. Visit /auth/google first.");
   }
 
@@ -24,6 +22,21 @@ const getBlogs = async () => {
   return response.data.items || [];
 };
 
+const publishToBlogger = async ({ title, body }) => {
+  const blogger = getBloggerClient();
+
+  const response = await blogger.posts.insert({
+    blogId: process.env.BLOGGER_BLOG_ID,
+    requestBody: {
+      title,
+      content: body,
+    },
+  });
+
+  return response.data;
+};
+
 module.exports = {
   getBlogs,
+  publishToBlogger,
 };
