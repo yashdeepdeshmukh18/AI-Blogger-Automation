@@ -2,12 +2,15 @@ require("dotenv").config();
 
 const express = require("express");
 const connectDB = require("./config/db");
+const articleRoutes = require("./routes/articleRoutes");
 
 const app = express();
 
 app.use(express.json());
+app.use("/api/articles", articleRoutes);
 
 connectDB();
+
 
 app.get("/", (req, res) => {
   res.json({ message: "AI Blogger Automation API running" });
