@@ -16,7 +16,7 @@ const articleSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["PENDING", "PUBLISHED", "FAILED"],
+      enum: ["PENDING", "PROCESSING", "PUBLISHED", "FAILED"],
       default: "PENDING",
     },
     retryCount: {
@@ -25,8 +25,9 @@ const articleSchema = new mongoose.Schema(
     },
     normalizedTitle: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
+      sparse: true,
       index: true,
     },
   },

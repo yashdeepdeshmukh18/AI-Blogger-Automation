@@ -6,9 +6,18 @@ const publishPendingArticle = async () => {
   let article;
 
   try {
-    article = await Article.findOne({
-      status: "PENDING",
-    }).sort({ createdAt: 1 });
+    article = await Article.findOneAndUpdate(
+        { status: "PENDING" },
+        {
+            $set: {
+            status: "PROCESSING",
+            },
+        },
+        {
+            sort: { createdAt: 1 },
+            returnDocument: "after",
+        }
+    );
 
     if (!article) {
       console.log("No pending articles to publish");
