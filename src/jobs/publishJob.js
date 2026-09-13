@@ -30,12 +30,21 @@ const publishPendingArticle = async () => {
     console.error("Scheduled publishing failed:", error.message);
 
     if (article) {
-      article.status = "FAILED";
-      await article.save();
+        article.retryCount += 1;
 
-      console.log(`Article marked as FAILED: ${article._id}`);
+        if (article.retryCount >= 3) {
+            article.status = "FAILED";
+            console.log("Maximum retries reached. Article marked as FAILED.");
+        } else {
+            article.status = "PENDING";
+            console.log(
+                `Retry scheduled. Attempt ${article.retryCount}/3`
+            );
+        }
+
+        await article.save();
     }
-  }
+   }
 };
 
 const startPublishJob = () => {

@@ -19,6 +19,10 @@ const articleSchema = new mongoose.Schema(
       enum: ["PENDING", "PUBLISHED", "FAILED"],
       default: "PENDING",
     },
+    retryCount: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
