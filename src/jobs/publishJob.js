@@ -3,8 +3,10 @@ const Article = require("../models/Article");
 const { publishToBlogger } = require("../services/bloggerService");
 
 const publishPendingArticle = async () => {
+  let article;
+
   try {
-    const article = await Article.findOne({
+    article = await Article.findOne({
       status: "PENDING",
     }).sort({ createdAt: 1 });
 
@@ -26,11 +28,19 @@ const publishPendingArticle = async () => {
     console.log(`Published successfully: ${bloggerPost.url}`);
   } catch (error) {
     console.error("Scheduled publishing failed:", error.message);
+
+    if (article) {
+      article.status = "FAILED";
+      await article.save();
+
+      console.log(`Article marked as FAILED: ${article._id}`);
+    }
   }
 };
 
 const startPublishJob = () => {
-    cron.schedule("0 * * * *", publishPendingArticle);
+  cron.schedule("0 * * * *", publishPendingArticle);
+
   console.log("Hourly Blogger publishing job started");
 };
 
