@@ -96,7 +96,7 @@ Install or prepare the following:
 ### 1. Clone the Repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone https://github.com/yashdeepdeshmukh18/AI-Blogger-Automation.git
 cd AI-Blogger-Automation
 ```
 
